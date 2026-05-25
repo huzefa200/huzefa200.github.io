@@ -1,0 +1,828 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HUZEFA® — Editing Agency</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --black: #080808;
+    --white: #f2f0eb;
+    --accent: #e81000;
+    --gray: #1a1a1a;
+    --mid: #888;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--black);
+    color: var(--white);
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 300;
+    overflow-x: hidden;
+    cursor: none;
+  }
+
+  /* CURSOR */
+  .cursor {
+    position: fixed; top: 0; left: 0;
+    width: 10px; height: 10px;
+    background: var(--accent);
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 9999;
+    transition: transform 0.15s ease;
+    mix-blend-mode: difference;
+  }
+  .cursor-ring {
+    position: fixed; top: 0; left: 0;
+    width: 36px; height: 36px;
+    border: 1px solid rgba(232,255,0,0.5);
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 9998;
+    transition: transform 0.4s ease, width 0.3s, height 0.3s;
+  }
+  body:has(a:hover) .cursor-ring,
+  body:has(button:hover) .cursor-ring { width: 60px; height: 60px; }
+
+  /* NAV */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 24px 40px;
+    z-index: 100;
+    mix-blend-mode: difference;
+  }
+  .logo {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 22px;
+    letter-spacing: 0.08em;
+    color: var(--white);
+    text-decoration: none;
+  }
+  .logo sup { font-size: 10px; vertical-align: super; }
+  nav ul { display: flex; gap: 32px; list-style: none; }
+  nav a {
+    color: var(--white);
+    text-decoration: none;
+    font-size: 11px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    opacity: 0.7;
+    transition: opacity 0.2s;
+  }
+  nav a:hover { opacity: 1; }
+
+  /* HERO */
+  .hero {
+    position: relative;
+    height: 100vh;
+    display: flex; align-items: flex-end;
+    overflow: hidden;
+  }
+  .hero-bg {
+    position: absolute; inset: 0;
+    background: linear-gradient(160deg, #0d0d0d 0%, #1a1a1a 40%, #0a0a0a 100%);
+  }
+  .hero-grid {
+    position: absolute; inset: 0;
+    background-image:
+      linear-gradient(rgba(232,255,0,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(232,255,0,0.03) 1px, transparent 1px);
+    background-size: 60px 60px;
+    animation: gridDrift 20s linear infinite;
+  }
+  @keyframes gridDrift { 0%{background-position:0 0} 100%{background-position:60px 60px} }
+
+  .hero-reel {
+    position: absolute; inset: 0;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 2px;
+    opacity: 0.12;
+    pointer-events: none;
+  }
+  .reel-col {
+    display: flex; flex-direction: column; gap: 2px;
+    animation: scrollCol 18s linear infinite;
+  }
+  .reel-col:nth-child(even) { animation-direction: reverse; }
+  @keyframes scrollCol { 0%{transform:translateY(0)} 100%{transform:translateY(-50%)} }
+  .reel-item {
+    height: 200px;
+    background: var(--gray);
+    flex-shrink: 0;
+    overflow: hidden;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 48px;
+    color: rgba(255,255,255,0.1);
+  }
+
+  .hero-content {
+    position: relative; z-index: 2;
+    padding: 0 40px 60px;
+    width: 100%;
+  }
+  .hero-label {
+    font-size: 11px;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 16px;
+    display: block;
+    animation: fadeUp 1s 0.2s both;
+  }
+  .hero-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(72px, 13vw, 180px);
+    line-height: 0.88;
+    letter-spacing: -0.01em;
+    animation: fadeUp 1s 0.4s both;
+  }
+  .hero-title em {
+    font-style: normal;
+    -webkit-text-stroke: 1px var(--white);
+    color: transparent;
+  }
+  .hero-sub {
+    margin-top: 28px;
+    display: flex; align-items: center; gap: 40px;
+    animation: fadeUp 1s 0.6s both;
+  }
+  .hero-sub p { font-size: 14px; color: var(--mid); max-width: 320px; line-height: 1.6; }
+  .cta-btn {
+    flex-shrink: 0;
+    background: var(--accent);
+    color: var(--black);
+    border: none;
+    padding: 14px 32px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    cursor: none;
+    text-decoration: none;
+    transition: transform 0.2s, background 0.2s;
+    display: inline-block;
+  }
+  .cta-btn:hover { transform: scale(1.04); background: #c50e00; }
+
+  .hero-scroll {
+    position: absolute; right: 40px; bottom: 60px;
+    writing-mode: vertical-lr;
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--mid);
+    display: flex; align-items: center; gap: 12px;
+    animation: fadeUp 1s 0.8s both;
+  }
+  .hero-scroll::after {
+    content: '';
+    width: 1px; height: 60px;
+    background: linear-gradient(to bottom, var(--mid), transparent);
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* MARQUEE */
+  .marquee-wrap {
+    overflow: hidden;
+    border-top: 1px solid #1f1f1f;
+    border-bottom: 1px solid #1f1f1f;
+    padding: 18px 0;
+    background: var(--black);
+  }
+  .marquee-track {
+    display: flex; gap: 0;
+    animation: marquee 20s linear infinite;
+    width: max-content;
+  }
+  .marquee-track:hover { animation-play-state: paused; }
+  @keyframes marquee { 0%{transform:translateX(0)} 100%{transform:translateX(-50%)} }
+  .marquee-item {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 15px;
+    letter-spacing: 0.15em;
+    padding: 0 32px;
+    white-space: nowrap;
+    color: var(--mid);
+    display: flex; align-items: center; gap: 32px;
+  }
+  .marquee-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--accent); }
+
+  /* ABOUT */
+  .about {
+    padding: 120px 40px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 80px;
+    align-items: start;
+  }
+  .about-left { position: sticky; top: 120px; }
+  .section-tag {
+    font-size: 10px;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 24px;
+    display: flex; align-items: center; gap: 12px;
+  }
+  .section-tag::before { content: ''; width: 30px; height: 1px; background: var(--accent); }
+  .about-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(48px, 6vw, 80px);
+    line-height: 0.9;
+    margin-bottom: 32px;
+  }
+  .about-title em { font-style: normal; color: var(--accent); }
+  .about-body { font-size: 17px; line-height: 1.75; color: rgba(242,240,235,0.7); }
+  .about-body p + p { margin-top: 20px; }
+
+  .stats {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1px;
+    background: #1a1a1a;
+    margin-top: 60px;
+    border: 1px solid #1a1a1a;
+  }
+  .stat {
+    padding: 32px;
+    background: var(--black);
+  }
+  .stat-num {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 56px;
+    color: var(--accent);
+    line-height: 1;
+  }
+  .stat-label { font-size: 11px; color: var(--mid); letter-spacing: 0.12em; text-transform: uppercase; margin-top: 8px; }
+
+  /* SERVICES */
+  .services {
+    padding: 120px 40px;
+    background: var(--gray);
+  }
+  .services-header {
+    display: flex; justify-content: space-between; align-items: flex-end;
+    margin-bottom: 80px;
+  }
+  .services-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(52px, 7vw, 100px);
+    line-height: 0.9;
+  }
+  .services-title em { font-style: normal; -webkit-text-stroke: 1px var(--white); color: transparent; }
+  .services-desc { max-width: 280px; font-size: 14px; color: var(--mid); line-height: 1.6; }
+
+  .services-list { display: flex; flex-direction: column; }
+  .service-item {
+    display: grid;
+    grid-template-columns: 60px 1fr auto;
+    align-items: center;
+    padding: 32px 0;
+    border-top: 1px solid #2a2a2a;
+    gap: 40px;
+    transition: padding-left 0.3s;
+    cursor: none;
+  }
+  .service-item:last-child { border-bottom: 1px solid #2a2a2a; }
+  .service-item:hover { padding-left: 20px; }
+  .service-num { font-family: 'Bebas Neue', sans-serif; font-size: 13px; color: var(--mid); }
+  .service-name { font-family: 'Bebas Neue', sans-serif; font-size: clamp(28px, 3vw, 44px); letter-spacing: 0.02em; }
+  .service-tags { display: flex; gap: 8px; flex-wrap: wrap; justify-content: flex-end; }
+  .tag {
+    border: 1px solid #333;
+    padding: 6px 14px;
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--mid);
+    transition: border-color 0.2s, color 0.2s;
+  }
+  .service-item:hover .tag { border-color: var(--accent); color: var(--accent); }
+
+  /* WORK */
+  .work { padding: 120px 40px; }
+  .work-header { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 60px; }
+  .work-title { font-family: 'Bebas Neue', sans-serif; font-size: clamp(52px, 7vw, 100px); line-height: 0.9; }
+  .view-all {
+    color: var(--accent);
+    text-decoration: none;
+    font-size: 12px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    border-bottom: 1px solid var(--accent);
+    padding-bottom: 2px;
+    transition: opacity 0.2s;
+  }
+  .view-all:hover { opacity: 0.6; }
+
+  .work-grid {
+    display: grid;
+    grid-template-columns: repeat(12, 1fr);
+    gap: 12px;
+  }
+  .work-card {
+    position: relative; overflow: hidden; cursor: none;
+    background: var(--gray);
+  }
+  .work-card:nth-child(1) { grid-column: span 8; }
+  .work-card:nth-child(2) { grid-column: span 4; }
+  .work-card:nth-child(3) { grid-column: span 4; }
+  .work-card:nth-child(4) { grid-column: span 8; }
+  .card-inner {
+    aspect-ratio: unset;
+    width: 100%; height: 100%; min-height: 360px;
+    display: flex; align-items: center; justify-content: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .card-bg {
+    position: absolute; inset: 0;
+    transition: transform 0.6s ease;
+  }
+  .work-card:hover .card-bg { transform: scale(1.05); }
+  .card-bg-1 { background: linear-gradient(135deg, #1a1a1a, #2d1f0e); }
+  .card-bg-2 { background: linear-gradient(135deg, #0e1a2d, #1a1a1a); }
+  .card-bg-3 { background: linear-gradient(135deg, #1a0e0e, #2d1a1a); }
+  .card-bg-4 { background: linear-gradient(135deg, #0e2d1a, #1a1a1a); }
+
+  .card-pattern {
+    position: absolute; inset: 0;
+    opacity: 0.4;
+    background-image: repeating-linear-gradient(
+      45deg,
+      transparent,
+      transparent 20px,
+      rgba(255,255,255,0.02) 20px,
+      rgba(255,255,255,0.02) 21px
+    );
+  }
+  .card-label {
+    position: absolute; inset: 0;
+    display: flex; flex-direction: column;
+    justify-content: flex-end;
+    padding: 28px;
+    background: linear-gradient(to top, rgba(0,0,0,0.85) 0%, transparent 60%);
+    z-index: 2;
+    transition: opacity 0.3s;
+  }
+  .card-category {
+    font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase;
+    color: var(--accent); margin-bottom: 8px;
+  }
+  .card-title { font-family: 'Bebas Neue', sans-serif; font-size: clamp(22px, 2.5vw, 36px); }
+  .card-hover {
+    position: absolute; inset: 0; z-index: 3;
+    display: flex; align-items: center; justify-content: center;
+    background: rgba(232,255,0,0.08);
+    opacity: 0; transition: opacity 0.3s;
+  }
+  .work-card:hover .card-hover { opacity: 1; }
+  .play-icon {
+    width: 56px; height: 56px; border-radius: 50%;
+    border: 2px solid var(--accent);
+    display: flex; align-items: center; justify-content: center;
+  }
+  .play-icon svg { margin-left: 3px; }
+
+  /* PROCESS */
+  .process { padding: 120px 40px; background: var(--gray); }
+  .process-title { font-family: 'Bebas Neue', sans-serif; font-size: clamp(52px, 7vw, 100px); line-height: 0.9; margin-bottom: 80px; }
+  .process-title em { font-style: normal; color: var(--accent); }
+  .process-steps { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px; background: #2a2a2a; border: 1px solid #2a2a2a; }
+  .process-step { background: var(--gray); padding: 40px 32px; position: relative; overflow: hidden; }
+  .step-num {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 100px;
+    color: rgba(255,255,255,0.04);
+    position: absolute; top: -10px; right: 16px;
+    line-height: 1;
+  }
+  .step-icon { font-size: 28px; margin-bottom: 20px; }
+  .step-name { font-family: 'Bebas Neue', sans-serif; font-size: 26px; margin-bottom: 12px; }
+  .step-desc { font-size: 13px; color: var(--mid); line-height: 1.6; }
+
+  /* TESTIMONIALS */
+  .testimonials { padding: 120px 40px; }
+  .test-title { font-family: 'Bebas Neue', sans-serif; font-size: clamp(52px, 7vw, 100px); line-height: 0.9; margin-bottom: 60px; }
+  .test-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+  .test-card {
+    border: 1px solid #1f1f1f;
+    padding: 40px;
+    position: relative;
+    transition: border-color 0.3s;
+  }
+  .test-card:hover { border-color: var(--accent); }
+  .test-quote {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 80px; color: var(--accent);
+    line-height: 0.7; margin-bottom: 20px;
+    opacity: 0.4;
+  }
+  .test-text { font-size: 15px; line-height: 1.7; color: rgba(242,240,235,0.75); margin-bottom: 32px; }
+  .test-author { display: flex; align-items: center; gap: 14px; }
+  .test-avatar {
+    width: 40px; height: 40px; border-radius: 50%;
+    background: linear-gradient(135deg, #1a1a1a, #333);
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 16px; color: var(--accent);
+    flex-shrink: 0;
+  }
+  .test-name { font-size: 13px; font-weight: 500; }
+  .test-role { font-size: 11px; color: var(--mid); letter-spacing: 0.08em; }
+
+  /* CONTACT */
+  .contact { padding: 120px 40px; background: var(--accent); }
+  .contact-inner { max-width: 800px; }
+  .contact-label { font-size: 11px; letter-spacing: 0.25em; text-transform: uppercase; color: rgba(8,8,8,0.5); margin-bottom: 16px; }
+  .contact-title { font-family: 'Bebas Neue', sans-serif; font-size: clamp(60px, 10vw, 140px); line-height: 0.85; color: var(--black); margin-bottom: 48px; }
+  .contact-links { display: flex; gap: 32px; flex-wrap: wrap; }
+  .contact-link {
+    color: var(--black);
+    text-decoration: none;
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    border-bottom: 2px solid rgba(8,8,8,0.3);
+    padding-bottom: 4px;
+    transition: border-color 0.2s;
+  }
+  .contact-link:hover { border-color: var(--black); }
+  .contact-email { font-family: 'Bebas Neue', sans-serif; font-size: clamp(24px, 3.5vw, 42px); color: var(--black); margin-bottom: 40px; letter-spacing: 0.02em; }
+
+  /* FOOTER */
+  footer {
+    padding: 32px 40px;
+    display: flex; align-items: center; justify-content: space-between;
+    border-top: 1px solid #1a1a1a;
+  }
+  .footer-logo { font-family: 'Bebas Neue', sans-serif; font-size: 18px; letter-spacing: 0.08em; }
+  .footer-copy { font-size: 11px; color: var(--mid); }
+  .footer-links { display: flex; gap: 24px; }
+  .footer-links a { color: var(--mid); text-decoration: none; font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; transition: color 0.2s; }
+  .footer-links a:hover { color: var(--accent); }
+
+  /* SCROLL REVEAL */
+  .reveal { opacity: 0; transform: translateY(40px); transition: opacity 0.8s ease, transform 0.8s ease; }
+  .reveal.visible { opacity: 1; transform: none; }
+  .reveal-delay-1 { transition-delay: 0.1s; }
+  .reveal-delay-2 { transition-delay: 0.2s; }
+  .reveal-delay-3 { transition-delay: 0.3s; }
+
+  @media (max-width: 900px) {
+    nav ul { display: none; }
+    .about { grid-template-columns: 1fr; }
+    .about-left { position: static; }
+    .process-steps { grid-template-columns: repeat(2, 1fr); }
+    .test-grid { grid-template-columns: 1fr; }
+    .work-card:nth-child(1),
+    .work-card:nth-child(2),
+    .work-card:nth-child(3),
+    .work-card:nth-child(4) { grid-column: span 12; }
+    .services-header { flex-direction: column; align-items: flex-start; gap: 20px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="cursorRing"></div>
+
+<!-- NAV -->
+<nav>
+  <a href="#" class="logo">HUZEFA<sup>®</sup></a>
+  <ul>
+    <li><a href="#about">About</a></li>
+    <li><a href="#services">Services</a></li>
+    <li><a href="#work">Work</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-grid"></div>
+  <div class="hero-reel">
+    <div class="reel-col">
+      <div class="reel-item">CUT</div><div class="reel-item">EDIT</div><div class="reel-item">VFX</div>
+      <div class="reel-item">CUT</div><div class="reel-item">EDIT</div><div class="reel-item">VFX</div>
+    </div>
+    <div class="reel-col">
+      <div class="reel-item">COLOR</div><div class="reel-item">GRADE</div><div class="reel-item">MIX</div>
+      <div class="reel-item">COLOR</div><div class="reel-item">GRADE</div><div class="reel-item">MIX</div>
+    </div>
+    <div class="reel-col">
+      <div class="reel-item">REEL</div><div class="reel-item">BRAND</div><div class="reel-item">AD</div>
+      <div class="reel-item">REEL</div><div class="reel-item">BRAND</div><div class="reel-item">AD</div>
+    </div>
+    <div class="reel-col">
+      <div class="reel-item">FILM</div><div class="reel-item">MOTION</div><div class="reel-item">SFX</div>
+      <div class="reel-item">FILM</div><div class="reel-item">MOTION</div><div class="reel-item">SFX</div>
+    </div>
+  </div>
+
+  <div class="hero-content">
+    <span class="hero-label">Post-Production Agency</span>
+    <h1 class="hero-title">
+      HUZEFA<sup style="font-size:0.3em;vertical-align:super">®</sup><br>
+      <em>WE CUT</em><br>
+      <em>FRAMES</em>
+    </h1>
+    <div class="hero-sub">
+      <p>We edit, color, and produce everything from brand films to social reels — with precision you can trust.</p>
+      <a href="#work" class="cta-btn">See Our Work</a>
+    </div>
+  </div>
+  <div class="hero-scroll">Scroll Down</div>
+</section>
+
+<!-- MARQUEE -->
+<div class="marquee-wrap">
+  <div class="marquee-track">
+    <div class="marquee-item">Video Editing <span class="marquee-dot"></span></div>
+    <div class="marquee-item">Color Grading <span class="marquee-dot"></span></div>
+    <div class="marquee-item">Motion Graphics <span class="marquee-dot"></span></div>
+    <div class="marquee-item">Brand Films <span class="marquee-dot"></span></div>
+    <div class="marquee-item">Social Reels <span class="marquee-dot"></span></div>
+    <div class="marquee-item">VFX <span class="marquee-dot"></span></div>
+    <div class="marquee-item">Sound Design <span class="marquee-dot"></span></div>
+    <div class="marquee-item">YouTube Content <span class="marquee-dot"></span></div>
+    <!-- duplicate for seamless loop -->
+    <div class="marquee-item">Video Editing <span class="marquee-dot"></span></div>
+    <div class="marquee-item">Color Grading <span class="marquee-dot"></span></div>
+    <div class="marquee-item">Motion Graphics <span class="marquee-dot"></span></div>
+    <div class="marquee-item">Brand Films <span class="marquee-dot"></span></div>
+    <div class="marquee-item">Social Reels <span class="marquee-dot"></span></div>
+    <div class="marquee-item">VFX <span class="marquee-dot"></span></div>
+    <div class="marquee-item">Sound Design <span class="marquee-dot"></span></div>
+    <div class="marquee-item">YouTube Content <span class="marquee-dot"></span></div>
+  </div>
+</div>
+
+<!-- ABOUT -->
+<section class="about" id="about">
+  <div class="about-left reveal">
+    <div class="section-tag">About</div>
+    <h2 class="about-title">We Edit<br><em>Stories</em><br>That Stick.</h2>
+    <div class="stats">
+      <div class="stat"><div class="stat-num">150+</div><div class="stat-label">Projects Delivered</div></div>
+      <div class="stat"><div class="stat-num">4+</div><div class="stat-label">Years Experience</div></div>
+      <div class="stat"><div class="stat-num">60+</div><div class="stat-label">Happy Clients</div></div>
+      <div class="stat"><div class="stat-num">48h</div><div class="stat-label">Avg Turnaround</div></div>
+    </div>
+  </div>
+  <div class="about-body reveal reveal-delay-2">
+    <p>Huzefa's editing agency is a post-production powerhouse built for brands, creators, and businesses that refuse to be ignored. We don't just cut footage — we craft narratives that command attention from the first frame to the last.</p>
+    <p>Based in Pakistan and working globally, our team of editors, colorists, and motion designers brings world-class quality to every project — whether it's a 15-second reel or a full-length documentary.</p>
+    <p>We believe great editing is invisible. The best cut is the one your audience never notices — they just can't stop watching.</p>
+  </div>
+</section>
+
+<!-- SERVICES -->
+<section class="services" id="services">
+  <div class="services-header reveal">
+    <h2 class="services-title">What<br>We <em>Do</em></h2>
+    <p class="services-desc">A full-service post-production agency for brands and creators who want to stand out.</p>
+  </div>
+  <div class="services-list">
+    <div class="service-item reveal">
+      <span class="service-num">01</span>
+      <span class="service-name">Video Editing</span>
+      <div class="service-tags"><span class="tag">Long-form</span><span class="tag">Short-form</span><span class="tag">Reels</span></div>
+    </div>
+    <div class="service-item reveal reveal-delay-1">
+      <span class="service-num">02</span>
+      <span class="service-name">Color Grading</span>
+      <div class="service-tags"><span class="tag">Cinematic</span><span class="tag">Commercial</span></div>
+    </div>
+    <div class="service-item reveal reveal-delay-2">
+      <span class="service-num">03</span>
+      <span class="service-name">Motion Graphics</span>
+      <div class="service-tags"><span class="tag">2D Animation</span><span class="tag">Titles</span><span class="tag">Intros</span></div>
+    </div>
+    <div class="service-item reveal reveal-delay-3">
+      <span class="service-num">04</span>
+      <span class="service-name">Brand Films</span>
+      <div class="service-tags"><span class="tag">Ads</span><span class="tag">Promos</span><span class="tag">Documentary</span></div>
+    </div>
+    <div class="service-item reveal">
+      <span class="service-num">05</span>
+      <span class="service-name">Sound Design</span>
+      <div class="service-tags"><span class="tag">Music Sync</span><span class="tag">SFX</span><span class="tag">Mixing</span></div>
+    </div>
+    <div class="service-item reveal reveal-delay-1">
+      <span class="service-num">06</span>
+      <span class="service-name">Thumbnail Design</span>
+      <div class="service-tags"><span class="tag">YouTube</span><span class="tag">Social</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- WORK -->
+<section class="work" id="work">
+  <div class="work-header reveal">
+    <h2 class="work-title">Selected<br>Work</h2>
+    <a href="#contact" class="view-all">Start a Project →</a>
+  </div>
+  <div class="work-grid">
+    <div class="work-card reveal">
+      <div class="card-inner">
+        <div class="card-bg card-bg-1"></div>
+        <div class="card-pattern"></div>
+        <div class="card-label">
+          <span class="card-category">Brand Film</span>
+          <h3 class="card-title">Nomad Coffee Co. — Brand Launch</h3>
+        </div>
+        <div class="card-hover">
+          <div class="play-icon">
+            <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M5 3L15 9L5 15V3Z" fill="#e8ff00"/></svg>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="work-card reveal reveal-delay-1">
+      <div class="card-inner">
+        <div class="card-bg card-bg-2"></div>
+        <div class="card-pattern"></div>
+        <div class="card-label">
+          <span class="card-category">Social Reels</span>
+          <h3 class="card-title">TechStartup Series</h3>
+        </div>
+        <div class="card-hover">
+          <div class="play-icon">
+            <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M5 3L15 9L5 15V3Z" fill="#e8ff00"/></svg>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="work-card reveal reveal-delay-2">
+      <div class="card-inner">
+        <div class="card-bg card-bg-3"></div>
+        <div class="card-pattern"></div>
+        <div class="card-label">
+          <span class="card-category">Documentary</span>
+          <h3 class="card-title">Streets of Lahore</h3>
+        </div>
+        <div class="card-hover">
+          <div class="play-icon">
+            <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M5 3L15 9L5 15V3Z" fill="#e8ff00"/></svg>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="work-card reveal reveal-delay-3">
+      <div class="card-inner">
+        <div class="card-bg card-bg-4"></div>
+        <div class="card-pattern"></div>
+        <div class="card-label">
+          <span class="card-category">Commercial</span>
+          <h3 class="card-title">Fashion Week Recap — 2024</h3>
+        </div>
+        <div class="card-hover">
+          <div class="play-icon">
+            <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M5 3L15 9L5 15V3Z" fill="#e8ff00"/></svg>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PROCESS -->
+<section class="process">
+  <h2 class="process-title reveal">How We<br><em>Work</em></h2>
+  <div class="process-steps">
+    <div class="process-step reveal">
+      <span class="step-num">01</span>
+      <div class="step-icon">🎯</div>
+      <h3 class="step-name">Brief</h3>
+      <p class="step-desc">We listen first. You tell us the vision, the audience, the feel. We absorb everything.</p>
+    </div>
+    <div class="process-step reveal reveal-delay-1">
+      <span class="step-num">02</span>
+      <div class="step-icon">🎬</div>
+      <h3 class="step-name">Rough Cut</h3>
+      <p class="step-desc">Our editors craft the first assembly — structure and story come before polish.</p>
+    </div>
+    <div class="process-step reveal reveal-delay-2">
+      <span class="step-num">03</span>
+      <div class="step-icon">🎨</div>
+      <h3 class="step-name">Refine</h3>
+      <p class="step-desc">We dial in color, sound, motion, and timing until every frame earns its place.</p>
+    </div>
+    <div class="process-step reveal reveal-delay-3">
+      <span class="step-num">04</span>
+      <div class="step-icon">🚀</div>
+      <h3 class="step-name">Deliver</h3>
+      <p class="step-desc">Final files, export-ready for every platform — on time, every time.</p>
+    </div>
+  </div>
+</section>
+
+<!-- TESTIMONIALS -->
+<section class="testimonials">
+  <h2 class="test-title reveal">Client<br>Love</h2>
+  <div class="test-grid">
+    <div class="test-card reveal">
+      <div class="test-quote">"</div>
+      <p class="test-text">Huzefa's team turned our raw footage into something cinematic. The turnaround was fast and the quality was insane — our engagement doubled after the reel went live.</p>
+      <div class="test-author">
+        <div class="test-avatar">A</div>
+        <div>
+          <div class="test-name">Ayaan Raza</div>
+          <div class="test-role">Founder, Nomad Coffee</div>
+        </div>
+      </div>
+    </div>
+    <div class="test-card reveal reveal-delay-1">
+      <div class="test-quote">"</div>
+      <p class="test-text">We needed 12 reels in 4 days for a product launch. They delivered 14, all on brand, all fire. This is the editing agency you keep on retainer.</p>
+      <div class="test-author">
+        <div class="test-avatar">S</div>
+        <div>
+          <div class="test-name">Sara Khan</div>
+          <div class="test-role">Marketing Lead, TechPak</div>
+        </div>
+      </div>
+    </div>
+    <div class="test-card reveal reveal-delay-2">
+      <div class="test-quote">"</div>
+      <p class="test-text">The color grade they delivered on our documentary made it look like it belonged at a film festival. Exceptional eye, exceptional work.</p>
+      <div class="test-author">
+        <div class="test-avatar">Z</div>
+        <div>
+          <div class="test-name">Zara Mirza</div>
+          <div class="test-role">Independent Filmmaker</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section class="contact" id="contact">
+  <div class="contact-inner">
+    <div class="contact-label">Let's Work Together</div>
+    <h2 class="contact-title">Ready<br>To Roll?</h2>
+    <div class="contact-email">huzefa@editagency.com</div>
+    <div class="contact-links">
+      <a href="mailto:huzefa@editagency.com" class="contact-link">Email Us</a>
+      <a href="#" class="contact-link">Instagram</a>
+      <a href="#" class="contact-link">WhatsApp</a>
+      <a href="#" class="contact-link">YouTube</a>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-logo">HUZEFA<sup style="font-size:0.5em">®</sup></div>
+  <div class="footer-copy">© 2025 Huzefa Editing Agency. All rights reserved.</div>
+  <div class="footer-links">
+    <a href="#about">About</a>
+    <a href="#services">Services</a>
+    <a href="#work">Work</a>
+    <a href="#contact">Contact</a>
+  </div>
+</footer>
+
+<script>
+  // Cursor
+  const cursor = document.getElementById('cursor');
+  const ring = document.getElementById('cursorRing');
+  let mx = 0, my = 0, rx = 0, ry = 0;
+  document.addEventListener('mousemove', e => { mx = e.clientX; my = e.clientY; });
+  function animateCursor() {
+    cursor.style.transform = `translate(${mx - 5}px, ${my - 5}px)`;
+    rx += (mx - rx) * 0.12;
+    ry += (my - ry) * 0.12;
+    ring.style.transform = `translate(${rx - 18}px, ${ry - 18}px)`;
+    requestAnimationFrame(animateCursor);
+  }
+  animateCursor();
+
+  // Scroll reveal
+  const reveals = document.querySelectorAll('.reveal');
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+  }, { threshold: 0.12, rootMargin: '0px 0px -60px 0px' });
+  reveals.forEach(el => observer.observe(el));
+</script>
+</body>
+</html>
